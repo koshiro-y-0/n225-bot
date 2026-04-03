@@ -1,0 +1,29 @@
+name: テスト自動実行
+
+on:
+  push:
+    branches:
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 依存ライブラリをインストール
+        run: pip install -r requirements.txt
+
+      - name: pytest を実行
+        run: pytest tests/ -v

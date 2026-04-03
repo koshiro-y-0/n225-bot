@@ -1,0 +1,44 @@
+name: 日本株Bot - 定時配信（平日 8:30 JST）
+
+on:
+  # 平日 08:00 JST (= UTC 23:00 前日) に起動し、スクリプト内で08:30まで待機
+  schedule:
+    - cron: "0 23 * * 0-4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  send-daily-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 依存ライブラリをインストール
+        run: pip install -r requirements.txt
+
+      - name: レポートを生成して送信
+        env:
+          ESTAT_API_KEY: ${{ secrets.ESTAT_API_KEY }}
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python dispatcher.py
+
+      - name: 日次データCSVをコミット・プッシュ
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/daily_indicators.csv
+          git diff --cached --quiet || git commit -m "data: $(date +%Y-%m-%d) の日次指標データを保存"
+          git push

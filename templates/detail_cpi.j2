@@ -1,0 +1,17 @@
+📈 CPI（消費者物価指数）— 詳細レポート
+━━━━━━━━━━━━━━━━━━━━
+📅 {{ fetch_date }}（{{ fetch_weekday }}）
+📊 データ期間：{{ cpi_date }}
+
+■ CPI 3系列比較
+  総合CPI：　　　　　　{{ "%.1f"|format(cpi_total) }}%
+  コアCPI（生鮮食品除く）：{{ "%.1f"|format(cpi_core) }}%
+  コアコアCPI（食料・エネルギー除く）：{{ "%.1f"|format(cpi_core_core) }}%
+
+■ 変動
+  前月比：{{ "%+.1f"|format(cpi_mom_change) }}ポイント
+  前月値：{{ "%.1f"|format(cpi_prev_total) }}%
+
+「物価の基調的な上昇率は、見通し期間後半に
+ かけて2%の物価安定目標と概ね整合的な水準で
+ 推移すると考えております。」

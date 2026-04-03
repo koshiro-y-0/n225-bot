@@ -1,0 +1,30 @@
+{% if mode == "list" %}
+📖 【経済用語解説】メニュー
+━━━━━━━━━━━━━━━━━━━━
+以下の用語について解説できます。
+「解説:〇〇」と入力してください。
+
+{% for key, item in glossary.items() %}
+・{{ key }}　→ {{ item.title }}
+{% endfor %}
+━━━━━━━━━━━━━━━━━━━━
+例）「解説:CPI」「解説:為替」
+{% elif mode == "detail" %}
+📖 用語解説：{{ entry.title }}
+━━━━━━━━━━━━━━━━━━━━
+{% for section in entry.sections %}
+
+■ {{ section.heading }}
+{% if section.body is defined %}
+{{ section.body }}
+{% endif %}
+{% if section.bullets is defined %}
+{% for item in section.bullets %}
+・{{ item }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+━━━━━━━━━━━━━━━━━━━━
+「{{ entry.quote }}」
+{% endif %}

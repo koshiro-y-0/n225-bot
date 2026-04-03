@@ -1,0 +1,16 @@
+🎯 政策金利 — 詳細レポート
+━━━━━━━━━━━━━━━━━━━━
+📅 {{ fetch_date }}（{{ fetch_weekday }}）{{ fetch_time }}時点
+
+■ 現在の政策金利
+  無担保コール翌日物：{{ "%.2f"|format(current_rate) }}%
+
+■ 過去の金利変更履歴（直近3回）
+{% for h in rate_history %}  {{ h.date }}：{{ "%.2f"|format(h.rate) }}%（{{ h.action }}）
+{% endfor %}
+■ 今後の政策決定会合スケジュール
+{% for m in next_meetings %}  📌 {{ m }}
+{% endfor %}
+「金融政策運営は、物価安定目標の持続的・
+ 安定的な実現に向けて、適切に判断して
+ まいります。」

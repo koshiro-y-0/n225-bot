@@ -1,0 +1,31 @@
+name: 日本株Bot - 節目アラート（30分毎）
+
+on:
+  # 平日 9:00-16:00 JST に30分おき (= UTC 00:00-07:00)
+  schedule:
+    - cron: "*/30 0-7 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  check-alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 依存ライブラリをインストール
+        run: pip install -r requirements.txt
+
+      - name: 為替アラートチェック
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          FOREX_ALERT_THRESHOLD: ${{ secrets.FOREX_ALERT_THRESHOLD }}
+        run: python src/ueda/forex_alert.py

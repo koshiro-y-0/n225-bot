@@ -1,0 +1,29 @@
+📊 【週間サマリー】{{ week_start }}〜{{ week_end }}
+━━━━━━━━━━━━━━━━━━━━
+📅 今週の振り返り
+━━━━━━━━━━━━━━━━━━━━
+{% if has_data %}
+💱 為替（USD/JPY）
+  週初：{{ "%.2f"|format(usdjpy_open) }}円 → 週末：{{ "%.2f"|format(usdjpy_close) }}円
+  週間変動：{{ "%+.2f"|format(week_change) }}円（{{ "%+.2f"|format(week_change_pct) }}%）
+  週間高値：{{ "%.2f"|format(usdjpy_high) }}円（{{ high_date }}）
+  週間安値：{{ "%.2f"|format(usdjpy_low) }}円（{{ low_date }}）
+
+🎯 政策金利：{{ "%.2f"|format(policy_rate) }}%（変更なし）
+
+📈 CPI（最新）：総合 {{ "%.1f"|format(cpi_total) }}%  コア {{ "%.1f"|format(cpi_core) }}%
+
+🏭 短観DI：{{ "%+d"|format(tankan_di) }}
+{% else %}
+⚠️ 今週のデータがまだ蓄積されていません。
+{% endif %}
+━━━━━━━━━━━━━━━━━━━━
+📰 来週の注目イベント
+━━━━━━━━━━━━━━━━━━━━
+{% if next_events %}{% for ev in next_events %}
+・{{ ev.date }}（{{ ev.weekday }}）{{ ev.event }}
+{% endfor %}{% else %}
+・来週は特に注目の経済イベントはありません
+{% endif %}
+━━━━━━━━━━━━━━━━━━━━
+「{{ weekly_comment }}」

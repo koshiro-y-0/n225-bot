@@ -1,0 +1,20 @@
+💱 為替相場 — 詳細レポート
+━━━━━━━━━━━━━━━━━━━━
+📅 {{ fetch_date }}（{{ fetch_weekday }}）{{ fetch_time }}時点
+
+■ USD/JPY
+  現在値：{{ "%.2f"|format(usdjpy) }}円
+  前日比：{{ "%+.2f"|format(usdjpy_diff) }}円（{{ "%+.2f"|format(usdjpy_diff_pct) }}%）
+  週間高値：{{ "%.2f"|format(usdjpy_week_high) }}円{% if usdjpy_high_date %}（{{ usdjpy_high_date }}）{% endif %}
+
+  週間安値：{{ "%.2f"|format(usdjpy_week_low) }}円{% if usdjpy_low_date %}（{{ usdjpy_low_date }}）{% endif %}
+
+  5日間推移：{{ usdjpy_5d }}
+
+■ EUR/JPY
+  現在値：{{ "%.2f"|format(eurjpy) }}円
+  前日比：{{ "%+.2f"|format(eurjpy_diff) }}円（{{ "%+.2f"|format(eurjpy_diff_pct) }}%）
+
+📊 トレンド判定：{{ trend }}
+「為替市場は米国金利動向を注視しつつ、
+ 緩やかな推移を続けております。」

@@ -1,0 +1,41 @@
+🏦 【日銀レポート】{{ fetch_date }}（{{ fetch_weekday }}）{{ fetch_time }}配信
+━━━━━━━━━━━━━━━━━━━━
+📊 本日の主要指標サマリー
+━━━━━━━━━━━━━━━━━━━━
+
+🎯 政策金利：{{ "%.2f"|format(policy_rate) }}%{% if policy_rate_changed %}（前回比 {{ rate_change_label }}）{% else %}（前回比 変化なし）{% endif %}
+
+   →「{{ policy_comment }}」
+
+💱 為替相場（{{ fetch_date }}（{{ fetch_weekday }}）{{ fetch_time }}時点）
+   USD/JPY：{{ "%.2f"|format(usdjpy) }}円（前日比 {{ "%+.2f"|format(usdjpy_diff) }}円）{% if forex_alert %}  ⚠️ 急変注意{% endif %}
+
+   EUR/JPY：{{ "%.2f"|format(eurjpy) }}円
+
+📈 CPI（最新 {{ cpi_date }}）：総合 {{ "%.1f"|format(cpi_total) }}%  コア {{ "%.1f"|format(cpi_core) }}%
+
+🏭 短観・大企業製造業DI：{{ "%+d"|format(tankan_di) }}（{{ tankan_date }}）
+
+📌 次回政策決定会合：{{ next_meeting_date }}
+
+━━━━━━━━━━━━━━━━━━━━
+🔄 {% if is_monday %}金曜日{% else %}昨日{% endif %}の振り返り（{{ review_date }}（{{ review_weekday }}））
+━━━━━━━━━━━━━━━━━━━━
+{% for line in review_lines %}
+・{{ line }}
+{% endfor %}
+━━━━━━━━━━━━━━━━━━━━
+🔮 今日の見通し
+━━━━━━━━━━━━━━━━━━━━
+{% for line in outlook_lines %}
+・{{ line }}
+{% endfor %}
+{% if upcoming_events %}━━━━━━━━━━━━━━━━━━━━
+📅 今後の注目イベント
+━━━━━━━━━━━━━━━━━━━━
+{% for ev in upcoming_events %}
+📌 {{ ev.date }}：{{ ev.event }}
+{%- endfor %}
+{% endif %}
+━━━━━━━━━━━━━━━━━━━━
+💡 詳しく知りたい項目をタップ ↓

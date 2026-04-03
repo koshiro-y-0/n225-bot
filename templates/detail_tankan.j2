@@ -1,0 +1,20 @@
+🏭 短観 — 詳細レポート
+━━━━━━━━━━━━━━━━━━━━
+📅 {{ fetch_date }}（{{ fetch_weekday }}）
+📊 調査期間：{{ tankan_date }}
+
+■ 業況判断DI（大企業）
+  製造業：　{{ "%+d"|format(mfg_di) }}（前回比 {{ "%+d"|format(mfg_di - mfg_prev_di) }}）
+  非製造業：{{ "%+d"|format(non_mfg_di) }}
+
+■ 先行き見通しDI
+  製造業：　{{ "%+d"|format(mfg_outlook_di) }}
+  非製造業：{{ "%+d"|format(non_mfg_outlook_di) }}
+
+■ 判定
+{% if mfg_di > 0 %}  製造業は景況感プラス圏を維持
+{% elif mfg_di == 0 %}  製造業はプラスマイナスゼロの水準
+{% else %}  製造業はマイナス圏に低下
+{% endif %}
+「企業の景況感は底堅く推移しており、
+ 賃金・設備投資の動向を注視しております。」
