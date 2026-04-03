@@ -1,0 +1,13 @@
+📊【日本株モーニングレポート】{{ fetch_date }}（{{ fetch_weekday }}）
+{% if is_monday %}※ 先週金曜日（{{ prev_date }}）の情報をお届けします
+{% endif %}
+━━━━━━━━━━━━━━━━━━━━
+📈 日経平均（{% if is_monday %}金曜{% else %}前日{% endif %}終値）
+  終値：{{ "{:,.0f}".format(nikkei_close) }}円（前日比 {{ "{:+,.0f}".format(nikkei_diff) }}円 / {{ "{:+.2f}".format(nikkei_diff_pct) }}%）
+  52週高値：{{ "{:,.0f}".format(nikkei_high_52w) }}円　　年初来：{{ "{:+.1f}".format(nikkei_ytd_pct) }}%
+
+💹 バリュエーション
+  PER  ：{{ "%.1f"|format(per) }}倍（長期平均目安：15倍）
+  EPS  ：{{ "{:,.0f}".format(eps) }}円
+  → {{ per_comment }}
+━━━━━━━━━━━━━━━━━━━━

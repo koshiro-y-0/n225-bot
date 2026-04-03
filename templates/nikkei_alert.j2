@@ -1,0 +1,18 @@
+{% if alert_type == "nikkei" %}
+🚨【日経平均 節目アラート】
+
+{{ "{:,.0f}".format(milestone) }}円台{% if direction == "上昇" %}に到達{% else %}を割り込み{% endif %}ました
+現在：{{ "{:,.0f}".format(current) }}円（前日比 {{ "{:+.2f}".format(diff_pct) }}%）
+
+💹 PER：{{ "%.1f"|format(per) }}倍 ／ EPS：{{ "{:,.0f}".format(eps) }}円
+{% elif alert_type == "eps" %}
+🚨【日経EPS 節目アラート】
+
+EPS が {{ "{:,.0f}".format(milestone) }}円台{% if direction == "上昇" %}に到達{% else %}を割り込み{% endif %}ました
+現在EPS：{{ "{:,.0f}".format(current) }}円
+
+📈 日経平均：{{ "{:,.0f}".format(nikkei_close) }}円 ／ PER：{{ "%.1f"|format(per) }}倍
+
+{% if direction == "上昇" %}→ 企業業績の改善が確認されています
+{% else %}→ PER過大評価のサインに注意が必要です
+{% endif %}{% endif %}
