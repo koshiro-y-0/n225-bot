@@ -31,10 +31,12 @@
 - [x] `templates/nikkei_alert.j2` を作成（節目アラート用）
 - [x] テンプレート変数の定義を文書化
 
-### 2-5. 単独 LINE 送信テスト
+### 2-5. 単独 LINE 送信テスト ✅
 - [x] `src/nikkei/send_test.py` 作成（fetch → テンプレート → LINE送信 の通しテスト）
 - [x] `.github/workflows/nikkei_test.yml` 追加（workflow_dispatch）
-- [ ] GitHub Actions Secrets 登録後、Actions タブから手動実行して動作確認
+- [x] GitHub Actions から手動実行して LINE 着信確認済み
+
+**Phase 2 完了 🎉**
 
 ---
 
