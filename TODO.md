@@ -32,8 +32,9 @@
 - [x] テンプレート変数の定義を文書化
 
 ### 2-5. 単独 LINE 送信テスト
-- [ ] `src/nikkei/fetch_nikkei.py` + `jpx_scraper.py` → テンプレート → LINE 送信の一連フローを通しテスト
-- [ ] GitHub Actions で手動実行（workflow_dispatch）して動作確認
+- [x] `src/nikkei/send_test.py` 作成（fetch → テンプレート → LINE送信 の通しテスト）
+- [x] `.github/workflows/nikkei_test.yml` 追加（workflow_dispatch）
+- [ ] GitHub Actions Secrets 登録後、Actions タブから手動実行して動作確認
 
 ---
 
