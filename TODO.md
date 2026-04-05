@@ -67,28 +67,29 @@
 
 ## Phase 4: ウィークリーレポート
 
-### 4-1. 週間データ集計
-- [ ] `src/nikkei/weekly_report.py` を作成
-- [ ] 月〜金の日経平均終値を yfinance でまとめ取得
-- [ ] 週間騰落額・騰落率を算出
-- [ ] PER/EPS の週間変化を算出
+### 4-1. 週間データ集計 ✅
+- [x] `src/nikkei/weekly_report.py` を作成
+- [x] yfinance で5営業日分の終値取得（既存の fetch_nikkei225_weekly 利用）
+- [x] 週間騰落額・騰落率・高値安値を算出（compute_weekly_stats）
+- [x] PER/EPS を JPX スクレイパー経由で取得
 
-### 4-2. 週間チャート画像生成
-- [ ] matplotlib で日経225 週間折れ線チャートを生成
-- [ ] 800 x 400px、PNG 形式
-- [ ] UedaBot の `generate_chart.py` パターンを踏襲
+### 4-2. 週間チャート画像生成 ✅
+- [x] `src/nikkei/generate_chart.py` 作成
+- [x] matplotlib で日経225 週間折れ線チャート生成
+- [x] UedaBot の `generate_chart.py` パターン踏襲（赤系配色で差別化）
 
-### 4-3. ウィークリーテンプレート
-- [ ] `templates/weekly_nikkei.j2` を作成（設計書のメッセージイメージに準拠）
-- [ ] UedaBot 週次サマリーとの統合方式を検討
+### 4-3. ウィークリーテンプレート ✅
+- [x] `templates/weekly_nikkei.j2` を作成
+- [x] UedaBot週次との共存方式: weekly.ymlで別ステップとして並列実行
 
-### 4-4. LINE 画像送信
-- [ ] `src/common/notify.py` の `send_line_image()` を利用
-- [ ] multipart/form-data でテキスト + 画像を同時送信
-- [ ] weekly.yml の動作確認（金曜 15:30 JST）
+### 4-4. LINE 画像送信 ✅
+- [x] `send_line_image()` を利用（UedaBotと同じパターン）
+- [x] weekly.yml に日経レポート送信ステップ + チャート画像送信ステップを追加
 
 ### 4-5. 統合テスト
-- [ ] 金曜 15:30 に画像付きウィークリーレポートが配信されることを確認
+- [x] 単体テスト追加（週次統計算出・テンプレートレンダリング +5件）
+- [x] ローカルでチャート生成動作確認
+- [ ] GitHub Actions で weekly.yml を手動実行して動作確認
 
 ---
 
