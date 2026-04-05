@@ -2,34 +2,34 @@
 
 ## Phase 2: 日本株モジュール単体開発
 
-### 2-1. yfinance で日経平均データ取得
-- [ ] `src/nikkei/fetch_nikkei.py` を作成
-- [ ] `^N225` から終値・前日比・前日比(%)を取得する関数
-- [ ] 52週高値を取得する関数
-- [ ] 年初来騰落率を算出する関数
-- [ ] フォールバック値の定義（API障害時用）
-- [ ] 単体テスト `tests/test_fetch_nikkei.py` を作成
+### 2-1. yfinance で日経平均データ取得 ✅
+- [x] `src/nikkei/fetch_nikkei.py` を作成
+- [x] `^N225` から終値・前日比・前日比(%)を取得する関数
+- [x] 52週高値を取得する関数
+- [x] 年初来騰落率を算出する関数
+- [x] フォールバック値の定義（API障害時用）
+- [x] 単体テスト `tests/test_fetch_nikkei.py` を作成
 
-### 2-2. JPX 公式サイトから PER/EPS スクレイピング
-- [ ] `src/nikkei/jpx_scraper.py` を作成
-- [ ] https://www.jpx.co.jp/markets/statistics-equities/misc/01.html をスクレイピング
-- [ ] 日経225 の PER（倍）・EPS（円）を抽出
-- [ ] HTML構造変更時のフォールバック処理
-- [ ] PER 水準コメント生成（長期平均15倍との比較）
-- [ ] 単体テスト `tests/test_jpx_scraper.py` を作成
+### 2-2. JPX 公式サイトから PER/EPS スクレイピング ✅
+- [x] `src/nikkei/jpx_scraper.py` を作成
+- [x] JPX `misc/04.html` からプライム市場加重平均PER/PBRを取得
+- [x] EPS算出（日経平均 / PER）
+- [x] HTML構造変更時のフォールバック処理
+- [x] PER 水準コメント生成（長期平均15倍との比較）
+- [x] 単体テスト `tests/test_jpx_scraper.py` を作成
 
-### 2-3. 節目判定ロジック
-- [ ] `src/nikkei/nikkei_module.py` を作成
-- [ ] 日経平均の節目判定（config.py の NIKKEI_MILESTONES 参照）
-- [ ] EPS の節目判定（config.py の EPS_MILESTONES 参照）
-- [ ] 前回節目状態の管理（重複通知防止）
-- [ ] 節目アラートメッセージ整形
-- [ ] 単体テスト `tests/test_nikkei_module.py` を作成
+### 2-3. 節目判定ロジック ✅
+- [x] `src/nikkei/nikkei_module.py` を作成
+- [x] 日経平均の節目判定（config.py の NIKKEI_MILESTONES 参照）
+- [x] EPS の節目判定（config.py の EPS_MILESTONES 参照）
+- [x] 前回節目状態の管理（重複通知防止）
+- [x] 節目アラートメッセージ整形
+- [x] 単体テスト `tests/test_nikkei_module.py` を作成
 
-### 2-4. 日経平均テンプレート作成
-- [ ] `templates/daily_nikkei.j2` を作成（設計書のメッセージイメージに準拠）
-- [ ] `templates/nikkei_alert.j2` を作成（節目アラート用）
-- [ ] テンプレート変数の定義を文書化
+### 2-4. 日経平均テンプレート作成 ✅
+- [x] `templates/daily_nikkei.j2` を作成（設計書のメッセージイメージに準拠）
+- [x] `templates/nikkei_alert.j2` を作成（節目アラート用）
+- [x] テンプレート変数の定義を文書化
 
 ### 2-5. 単独 LINE 送信テスト
 - [ ] `src/nikkei/fetch_nikkei.py` + `jpx_scraper.py` → テンプレート → LINE 送信の一連フローを通しテスト
