@@ -42,26 +42,26 @@
 
 ## Phase 3: dispatcher.py 統合
 
-### 3-1. dispatcher.py の実装
-- [ ] 曜日判定ロジック（月曜 → 金曜終値配信フラグ）
-- [ ] `nikkei_module` 呼出し + `ueda_module` 呼出し
-- [ ] 両モジュールのメッセージを統合して1つの配信にまとめる
-- [ ] 統合テンプレート `templates/daily_integrated.j2` を作成
+### 3-1. dispatcher.py の実装 ✅
+- [x] 曜日判定ロジック（月曜 → 金曜終値配信フラグ）
+- [x] `nikkei_module` 呼出し + `ueda_module` 呼出し（`build_ueda_report()` 抽出）
+- [x] 両モジュールのメッセージを統合して1つの配信にまとめる
+- [x] 統合テンプレート `templates/daily_integrated.j2` を作成
 
-### 3-2. daily.yml の切り替え
-- [ ] dispatcher.py をエントリーポイントに設定（既に設定済み、動作確認のみ）
-- [ ] 月曜日の配信メッセージに「先週金曜日の情報です」が表示されることを確認
+### 3-2. daily.yml の切り替え ✅
+- [x] dispatcher.py がエントリーポイント（既存設定を活用）
+- [x] 月曜日ルール実装（`_get_prev_friday_date` + is_monday フラグ）
 
-### 3-3. alert.yml の拡張
-- [ ] 日経平均の節目アラートを alert.yml に追加
-- [ ] EPS 節目アラートを alert.yml に追加
-- [ ] 前回節目フラグの永続化方式を決定（GitHub Cache or ファイル）
-- [ ] 重複通知防止の動作確認
+### 3-3. alert.yml の拡張 ✅
+- [x] `src/nikkei/nikkei_alert.py` 作成（日経平均・EPS両方の節目チェック）
+- [x] alert.yml に日経節目アラートステップを追加
+- [x] 節目フラグ永続化: `data/milestone_state.json` を自動コミット
+- [x] 重複通知防止ロジック（check_*_milestones で band 変化のみ通知）
 
 ### 3-4. 統合テスト
-- [ ] 全機能を統合した状態で LINE 送信テスト
-- [ ] 月曜日ルールのテスト
-- [ ] アラートの重複通知防止テスト
+- [x] dispatcher の単体テスト（月曜判定・レンダリング・統合）追加
+- [ ] GitHub Actions で daily workflow を手動実行して LINE 着信確認
+- [ ] alert workflow を手動実行して節目判定動作確認
 
 ---
 
