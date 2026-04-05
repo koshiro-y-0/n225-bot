@@ -46,8 +46,9 @@ def fetch_nikkei225() -> dict:
     try:
         ticker = yf.Ticker("^N225")
 
-        # 直近2日分の終値を取得（前日比算出用）
-        hist_2d = ticker.history(period="5d")
+        # 直近2営業日分の終値を取得（前日比算出用）
+        # 長期休場（年末年始・GW）後でも確実に2営業日取れるよう1ヶ月分取得
+        hist_2d = ticker.history(period="1mo")
         if hist_2d.empty or len(hist_2d) < 2:
             raise ValueError("日経平均の直近データが不足しています")
 
@@ -116,7 +117,9 @@ def fetch_nikkei225_weekly(days: int = 5) -> list:
     """
     try:
         ticker = yf.Ticker("^N225")
-        hist = ticker.history(period=f"{days + 3}d")  # 余裕をもって取得
+        # 祝日を考慮し、十分なバッファを確保（最低2週間分）
+        buffer_days = max(days * 2 + 7, 14)
+        hist = ticker.history(period=f"{buffer_days}d")
         if hist.empty:
             return []
 

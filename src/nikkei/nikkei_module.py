@@ -119,13 +119,15 @@ def _get_milestone_band(value: float, milestones: list) -> int:
 
 
 def _find_crossed_milestone(prev_band: int, current_band: int, milestones: list) -> int:
-    """超えた節目の値を返す"""
+    """
+    超えた節目の値を返す（複数バンドを跨いだ場合は最も高い/低い閾値を報告）。
+    """
     if current_band > prev_band:
-        # 上昇: prev_band 番目の節目を超えた
-        idx = min(prev_band, len(milestones) - 1)
+        # 上昇: current_band - 1 が「最後に超えた」節目のインデックス
+        idx = min(current_band - 1, len(milestones) - 1)
         return milestones[idx]
     else:
-        # 下落: current_band 番目の節目を下回った
+        # 下落: current_band が「最後に下回った」節目のインデックス
         idx = min(current_band, len(milestones) - 1)
         return milestones[idx]
 

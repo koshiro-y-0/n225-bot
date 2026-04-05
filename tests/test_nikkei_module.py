@@ -51,6 +51,16 @@ class TestFindCrossedMilestone:
         result = _find_crossed_milestone(3, 2, NIKKEI_MILESTONES)
         assert result == 38000
 
+    def test_複数バンド飛び越し上昇(self):
+        # band 1 → band 3: 36000, 38000を超えた → 最も高い38000を報告
+        result = _find_crossed_milestone(1, 3, NIKKEI_MILESTONES)
+        assert result == 38000
+
+    def test_複数バンド飛び越し下落(self):
+        # band 4 → band 1: 40000, 38000, 36000を割った → 最も低い36000を報告
+        result = _find_crossed_milestone(4, 1, NIKKEI_MILESTONES)
+        assert result == 36000
+
 
 class TestCheckNikkeiMilestones:
     """日経平均節目チェックのテスト"""
