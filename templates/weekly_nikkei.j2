@@ -1,0 +1,15 @@
+📊【日経平均 ウィークリーレポート】{{ fetch_date }}
+━━━━━━━━━━━━━━━━━━━━
+📈 週間パフォーマンス（{{ week_start_date }} 〜 {{ week_end_date }}）
+  週初値：{{ "{:,.0f}".format(week_open) }}円
+  週終値：{{ "{:,.0f}".format(week_close) }}円
+  週間騰落：{{ "{:+,.0f}".format(week_diff) }}円 ({{ "{:+.2f}".format(week_diff_pct) }}%)
+
+  週間高値：{{ "{:,.0f}".format(week_high) }}円
+  週間安値：{{ "{:,.0f}".format(week_low) }}円
+━━━━━━━━━━━━━━━━━━━━
+💹 バリュエーション（{{ per_data_month }}時点）
+  PER：{{ "%.1f"|format(per) }}倍
+  EPS：{{ "{:,.0f}".format(eps) }}円
+  → {{ per_comment }}
+━━━━━━━━━━━━━━━━━━━━

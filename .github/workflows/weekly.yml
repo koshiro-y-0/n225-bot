@@ -26,12 +26,19 @@ jobs:
       - name: 依存ライブラリをインストール
         run: pip install -r requirements.txt
 
-      - name: 週間サマリーを生成して送信
+      - name: UedaBot 週間サマリーを生成して送信
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python src/ueda/weekly_main.py
+
+      - name: 日経週次レポートを生成して送信
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m src.nikkei.weekly_report
 
       - name: チャート画像をコミット・プッシュ
         id: push_chart
@@ -48,7 +55,7 @@ jobs:
             echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: チャート画像をLINEに送信
+      - name: 為替チャート画像をLINEに送信
         if: steps.push_chart.outputs.pushed == 'true'
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
@@ -64,6 +71,27 @@ jobs:
           import os
           repo = os.getenv('GITHUB_REPOSITORY', 'koshiro-y-0/n225-bot')
           filename = f'chart_weekly_{now_jst().strftime(\"%Y%m%d\")}.png'
+          image_url = f'https://raw.githubusercontent.com/{repo}/main/data/{filename}'
+          print(f'[INFO] 画像URL: {image_url}')
+          send_line_image(image_url)
+          "
+
+      - name: 日経チャート画像をLINEに送信
+        if: steps.push_chart.outputs.pushed == 'true'
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          sleep 3
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from src.common.notify import send_line_image
+          from src.common.tz import now_jst
+          import os
+          repo = os.getenv('GITHUB_REPOSITORY', 'koshiro-y-0/n225-bot')
+          filename = f'nikkei_weekly_{now_jst().strftime(\"%Y%m%d\")}.png'
           image_url = f'https://raw.githubusercontent.com/{repo}/main/data/{filename}'
           print(f'[INFO] 画像URL: {image_url}')
           send_line_image(image_url)
