@@ -42,31 +42,43 @@ def _wait_until_target_time():
         print(f"[INFO] 08:30 JST になりました。レポート配信を開始します。")
 
 
+def build_ueda_report() -> tuple:
+    """
+    UedaBot のレポートテキストとデータを生成する（送信なし）。
+    dispatcher.py から呼び出されて統合メッセージに組み込まれる。
+    Returns:
+        (report_text, data, alerts) のタプル
+          - report_text: 通常レポート文字列
+          - data: fetch_all() の返り値（CSV保存・アラート判定用）
+          - alerts: アラート種別リスト
+    """
+    data = fetch_all()
+    alerts = check_alerts(data)
+    review_data = fetch_review_and_outlook(data)
+    report = generate_report(data, review_data)
+    return report, data, alerts
+
+
 def main():
     # 0. 08:30 JST まで待機
     _wait_until_target_time()
 
-    # 1. 経済指標を取得
-    data = fetch_all()
+    # 1. レポートとデータを生成
+    report, data, alerts = build_ueda_report()
 
-    # 2. アラート確認（緊急通知が必要か）
-    alerts = check_alerts(data)
+    # 2. アラート送信
     for alert_type in alerts:
         alert_msg = generate_alert(alert_type, data)
         print(f"[ALERT] {alert_type}: 送信します")
         send_all(alert_msg)
 
-    # 3. 昨日の振り返り・今日の見通しを生成
-    review_data = fetch_review_and_outlook(data)
-
-    # 4. 通常レポートを生成して送信（振り返り・見通し付き）
-    report = generate_report(data, review_data)
+    # 3. 通常レポート送信
     print("--- 生成されたレポート ---")
     print(report)
     print("-------------------------")
     send_all(report, with_quick_reply=True)
 
-    # 5. 日次データをCSVに蓄積
+    # 4. 日次データをCSVに蓄積
     save_daily(data)
 
 
