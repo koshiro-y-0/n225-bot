@@ -62,6 +62,11 @@ jobs:
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
+          FILENAME="chart_weekly_$(TZ=Asia/Tokyo date +%Y%m%d).png"
+          if [ ! -f "data/$FILENAME" ]; then
+            echo "[INFO] 為替チャート画像($FILENAME)が存在しないためスキップ"
+            exit 0
+          fi
           sleep 5
           python -c "
           import sys
@@ -83,6 +88,11 @@ jobs:
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
+          FILENAME="nikkei_weekly_$(TZ=Asia/Tokyo date +%Y%m%d).png"
+          if [ ! -f "data/$FILENAME" ]; then
+            echo "[INFO] 日経チャート画像($FILENAME)が存在しないためスキップ"
+            exit 0
+          fi
           sleep 3
           python -c "
           import sys
