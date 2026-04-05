@@ -23,8 +23,7 @@ env/
 .DS_Store
 Thumbs.db
 
-# Data (images are committed, CSV is committed by Actions)
-data/*.png
+# Data — CSV・画像は Actions でコミット（無視しない）
 !data/.gitkeep
 
 # Test
