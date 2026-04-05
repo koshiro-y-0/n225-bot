@@ -56,7 +56,6 @@ jobs:
           fi
 
       - name: 為替チャート画像をLINEに送信
-        if: steps.push_chart.outputs.pushed == 'true'
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
@@ -82,7 +81,6 @@ jobs:
           "
 
       - name: 日経チャート画像をLINEに送信
-        if: steps.push_chart.outputs.pushed == 'true'
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
