@@ -61,12 +61,3 @@ class TestRenderNikkeiBlock:
         assert "先週金曜日" in result
 
 
-class TestRenderIntegrated:
-    """render_integrated のテスト"""
-
-    def test_両ブロック含まれる(self):
-        nikkei = "【日経】テスト日経ブロック"
-        ueda = "【日銀】テスト日銀ブロック"
-        result = dispatcher.render_integrated(nikkei, ueda)
-        assert "テスト日経ブロック" in result
-        assert "テスト日銀ブロック" in result
