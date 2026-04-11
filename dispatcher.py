@@ -1,7 +1,7 @@
 """
 dispatcher.py
 統合エントリーポイント — GitHub Actions から呼び出される
-UedaBot + 日経モジュールを統合して1通の配信にまとめる
+UedaBot（為替/金利/CPI）と 日経モジュールを別メッセージで配信する
 """
 
 import sys
@@ -59,17 +59,6 @@ def render_nikkei_block(data: dict, is_monday: bool) -> str:
     return template.render(is_monday=is_monday, prev_date=prev_date, **data)
 
 
-def render_integrated(nikkei_block: str, ueda_block: str) -> str:
-    """統合テンプレートをレンダリング"""
-    env = Environment(
-        loader=FileSystemLoader(str(TEMPLATE_DIR)),
-        trim_blocks=True,
-        lstrip_blocks=True,
-    )
-    template = env.get_template("daily_integrated.j2")
-    return template.render(nikkei_block=nikkei_block, ueda_block=ueda_block)
-
-
 def main():
     # 0. 08:30 JST まで待機
     _wait_until_target_time()
@@ -92,14 +81,20 @@ def main():
     nikkei_data = fetch_nikkei_data()
     nikkei_block = render_nikkei_block(nikkei_data, is_monday)
 
-    # 4. 統合メッセージを組み立てて送信
-    integrated = render_integrated(nikkei_block, ueda_report)
-    print("--- 統合メッセージ ---")
-    print(integrated)
-    print("----------------------")
-    send_all(integrated, with_quick_reply=True)
+    # 4. UedaBot レポート（為替/金利/CPI）を送信
+    print("--- UedaBot レポート ---")
+    print(ueda_report)
+    print("------------------------")
+    send_all(ueda_report, with_quick_reply=True)
 
-    # 5. 日次データをCSVに蓄積（UedaBot分）
+    # 5. 少し間隔を空けて日経レポートを別メッセージで送信
+    time.sleep(2)
+    print("--- 日経レポート ---")
+    print(nikkei_block)
+    print("--------------------")
+    send_all(nikkei_block)
+
+    # 6. 日次データをCSVに蓄積（UedaBot分）
     save_daily(ueda_data)
 
 

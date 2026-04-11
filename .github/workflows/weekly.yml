@@ -27,6 +27,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: UedaBot 週間サマリーを生成して送信
+        continue-on-error: true
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
@@ -34,6 +35,7 @@ jobs:
         run: python src/ueda/weekly_main.py
 
       - name: 日経週次レポートを生成して送信
+        continue-on-error: true
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}

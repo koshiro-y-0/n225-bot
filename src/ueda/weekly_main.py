@@ -31,7 +31,9 @@ def upload_chart_to_github(image_path: str) -> str:
     import shutil
 
     filename = f"chart_weekly_{now_jst().strftime('%Y%m%d')}.png"
-    dest = Path(__file__).parent.parent / "data" / filename
+    data_dir = Path(__file__).resolve().parent.parent.parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    dest = data_dir / filename
     shutil.copy2(image_path, dest)
 
     # GitHub の raw URL を構築
