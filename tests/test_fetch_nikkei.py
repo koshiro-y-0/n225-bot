@@ -43,9 +43,11 @@ class TestFetchNikkei225:
 
         def history_side_effect(**kwargs):
             period = kwargs.get("period", "")
+            start = kwargs.get("start", "")
             if period == "1y":
                 return hist_1y
-            elif kwargs.get("start"):
+            # YTD は年始 (1月) からスタート、それ以外は main の直近45日取得
+            if start.endswith("-01-01") or "-01-" in start[:8]:
                 return hist_ytd
             return hist_5d
 

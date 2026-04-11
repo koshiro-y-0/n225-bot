@@ -13,6 +13,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from src.common.tz import now_jst
 
+
+def _fetch_history_safe(ticker, days_back: int = 45):
+    """
+    yfinance の history() を明示的な start/end で呼ぶ。
+    period='1mo' 相当の期間を取得しつつ、end を JST 基準の「翌日」に固定することで
+    Yahoo が直近の完了済みバーを必ず含めるようにする。
+    （GitHub Actions の UTC 実行環境で、JST 基準の最新営業日バーが欠落する問題への対策）
+    """
+    jst_today = now_jst().date()
+    end_date = jst_today + timedelta(days=1)
+    start_date = jst_today - timedelta(days=days_back)
+    return ticker.history(
+        start=start_date.strftime("%Y-%m-%d"),
+        end=end_date.strftime("%Y-%m-%d"),
+    )
+
 # 曜日の日本語表記
 WEEKDAY_JP = ["月", "火", "水", "木", "金", "土", "日"]
 
@@ -48,7 +64,7 @@ def fetch_nikkei225() -> dict:
 
         # 直近2営業日分の終値を取得（前日比算出用）
         # 長期休場（年末年始・GW）後でも確実に2営業日取れるよう1ヶ月分取得
-        hist_2d = ticker.history(period="1mo")
+        hist_2d = _fetch_history_safe(ticker, days_back=45)
         if hist_2d.empty or len(hist_2d) < 2:
             raise ValueError("日経平均の直近データが不足しています")
 
@@ -96,8 +112,12 @@ def _fetch_ytd_pct(ticker, current_close: float) -> float:
     try:
         now = now_jst()
         year_start = datetime(now.year, 1, 1)
-        # 年初の最初の営業日の終値を取得
-        hist_ytd = ticker.history(start=year_start.strftime("%Y-%m-%d"), period="5d")
+        # 年初の最初の営業日の終値を取得（年始から10日分取れば十分）
+        ytd_end = year_start + timedelta(days=10)
+        hist_ytd = ticker.history(
+            start=year_start.strftime("%Y-%m-%d"),
+            end=ytd_end.strftime("%Y-%m-%d"),
+        )
         if not hist_ytd.empty:
             ytd_start = float(hist_ytd["Close"].iloc[0])
             if ytd_start > 0:
@@ -119,7 +139,7 @@ def fetch_nikkei225_weekly(days: int = 5) -> list:
         ticker = yf.Ticker("^N225")
         # 祝日を考慮し、十分なバッファを確保（最低2週間分）
         buffer_days = max(days * 2 + 7, 14)
-        hist = ticker.history(period=f"{buffer_days}d")
+        hist = _fetch_history_safe(ticker, days_back=buffer_days)
         if hist.empty:
             return []
 
