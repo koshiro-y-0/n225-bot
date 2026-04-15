@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 import time
 from src.common.tz import now_jst
 from src.ueda.fetch_indicators import fetch_all, fetch_review_and_outlook
-from src.ueda.generate_report import generate_report, generate_alert
+from src.ueda.generate_report import generate_report
 from src.common.notify import send_all, check_alerts
 from src.common.data_store import save_daily
 
@@ -64,21 +64,16 @@ def main():
     _wait_until_target_time()
 
     # 1. レポートとデータを生成
-    report, data, alerts = build_ueda_report()
+    # アラートはメインレポート内にインライン表示されるため別送はしない
+    report, data, _ = build_ueda_report()
 
-    # 2. アラート送信
-    for alert_type in alerts:
-        alert_msg = generate_alert(alert_type, data)
-        print(f"[ALERT] {alert_type}: 送信します")
-        send_all(alert_msg)
-
-    # 3. 通常レポート送信
+    # 2. 通常レポート送信
     print("--- 生成されたレポート ---")
     print(report)
     print("-------------------------")
     send_all(report, with_quick_reply=True)
 
-    # 4. 日次データをCSVに蓄積
+    # 3. 日次データをCSVに蓄積
     save_daily(data)
 
 

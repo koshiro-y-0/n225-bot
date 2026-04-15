@@ -16,7 +16,6 @@ from src.common.tz import now_jst
 from src.common.notify import send_all
 from src.common.data_store import save_daily
 from src.ueda.main import build_ueda_report
-from src.ueda.generate_report import generate_alert
 from src.nikkei.nikkei_module import fetch_nikkei_data
 
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
@@ -67,34 +66,30 @@ def main():
     print(f"[INFO] 配信開始 (月曜判定: {is_monday})")
 
     # 1. UedaBot レポート生成
+    # アラートはメインレポート内にインライン表示されるため、別送はしない
+    # （report.j2 の forex_alert / policy_rate_changed で「⚠️ 急変注意」等を表示）
     print("[INFO] UedaBot レポート生成中...")
-    ueda_report, ueda_data, ueda_alerts = build_ueda_report()
+    ueda_report, ueda_data, _ = build_ueda_report()
 
-    # 2. UedaBot アラート（為替/金利/CPI）は先に個別送信
-    for alert_type in ueda_alerts:
-        alert_msg = generate_alert(alert_type, ueda_data)
-        print(f"[ALERT] {alert_type}: 送信します")
-        send_all(alert_msg)
-
-    # 3. 日経モジュール レポート生成
+    # 2. 日経モジュール レポート生成
     print("[INFO] 日経モジュール レポート生成中...")
     nikkei_data = fetch_nikkei_data()
     nikkei_block = render_nikkei_block(nikkei_data, is_monday)
 
-    # 4. UedaBot レポート（為替/金利/CPI）を送信
+    # 3. UedaBot レポート（為替/金利/CPI）を送信
     print("--- UedaBot レポート ---")
     print(ueda_report)
     print("------------------------")
     send_all(ueda_report, with_quick_reply=True)
 
-    # 5. 少し間隔を空けて日経レポートを別メッセージで送信
+    # 4. 少し間隔を空けて日経レポートを別メッセージで送信
     time.sleep(2)
     print("--- 日経レポート ---")
     print(nikkei_block)
     print("--------------------")
     send_all(nikkei_block)
 
-    # 6. 日次データをCSVに蓄積（UedaBot分）
+    # 5. 日次データをCSVに蓄積（UedaBot分）
     save_daily(ueda_data)
 
 
