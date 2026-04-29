@@ -62,21 +62,42 @@ def fetch_nikkei225() -> dict:
     try:
         ticker = yf.Ticker("^N225")
 
-        # 直近2営業日分の終値を取得（前日比算出用）
-        # 長期休場（年末年始・GW）後でも確実に2営業日取れるよう1ヶ月分取得
-        hist_2d = _fetch_history_safe(ticker, days_back=45)
-        if hist_2d.empty or len(hist_2d) < 2:
+        # 直近データを取得（前日比算出・52週高値・YTD用）
+        # 長期休場（GW・年末年始）後でも確実に複数営業日取れるよう45日分取得
+        hist = _fetch_history_safe(ticker, days_back=45)
+        if hist.empty or len(hist) < 2:
             raise ValueError("日経平均の直近データが不足しています")
 
-        close = round(float(hist_2d["Close"].iloc[-1]), 2)
-        prev_close = round(float(hist_2d["Close"].iloc[-2]), 2)
+        # --- 前日終値の取得 ---
+        # yfinance history は UTC/JST 境界の都合で最新バーが欠落する場合がある。
+        # fast_info['previousClose'] は Yahoo が管理する "直近完了済みセッション終値" を返すため
+        # より信頼性が高い。一方 history の末尾が fast_info と一致しない場合、
+        # history の末尾はその1つ前の営業日として前日比計算に使う。
+        hist_last  = round(float(hist["Close"].iloc[-1]), 2)
+        hist_prev  = round(float(hist["Close"].iloc[-2]), 2)
+        try:
+            fi_close = round(float(ticker.fast_info["previousClose"]), 2)
+        except Exception:
+            fi_close = hist_last
+
+        if fi_close != hist_last:
+            # fast_info が history より新しい（history が1日遅れている）場合
+            # close = fast_info の値、prev_close = history の末尾（=1つ前の営業日）
+            print(f"[INFO] fast_info close={fi_close} / hist[-1]={hist_last} → fast_info を採用")
+            close      = fi_close
+            prev_close = hist_last
+        else:
+            # history が最新まで揃っている通常ケース
+            close      = hist_last
+            prev_close = hist_prev
+
         diff = round(close - prev_close, 2)
         diff_pct = round((diff / prev_close) * 100, 2) if prev_close else 0.0
 
         # 52週高値
         high_52w = _fetch_52w_high(ticker)
 
-        # 年初来騰落率
+        # 年初来騰落率（close = 直近完了セッション終値）
         ytd_pct = _fetch_ytd_pct(ticker, close)
 
         return {
