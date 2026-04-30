@@ -52,11 +52,10 @@ class TestFetchNikkei225:
             return hist_5d
 
         mock_ticker.history.side_effect = history_side_effect
-        # fast_info が history と一致する通常ケース
-        mock_ticker.fast_info = {"previousClose": 36000.0}
 
         result = fetch_nikkei225()
 
+        # close = hist[-1], prev_close = hist[-2] のシンプルロジック
         assert result["nikkei_close"] == 36000.0
         assert result["nikkei_prev_close"] == 35800.0
         assert result["nikkei_diff"] == 200.0
@@ -65,22 +64,16 @@ class TestFetchNikkei225:
         assert "fetch_weekday" in result
 
     @patch("src.nikkei.fetch_nikkei.yf")
-    def test_historyが1日遅れている場合(self, mock_yf):
-        """fast_info が history より新しい終値を持つ場合（GW・祝日翌朝など）"""
+    def test_fast_infoは使われない(self, mock_yf):
+        """fast_info の値が history と異なっても history を信頼する（PR #14 リグレッション防止）"""
         mock_ticker = MagicMock()
         mock_yf.Ticker.return_value = mock_ticker
 
-        # history は4/27終値（60537）までしか返さない
-        dates = pd.date_range("2026-04-23", periods=3, freq="B")
-        hist_stale = pd.DataFrame({
-            "Close": [59716.0, 60537.0, 60537.0],  # 末尾2件が同値でも prev の特定が正しく動く
-            "High":  [59800.0, 60600.0, 60600.0],
-        }, index=dates)
-        # 実際は末尾2件が別値のほうが自然：4/25=59716, 4/27=60537
-        hist_stale = pd.DataFrame({
-            "Close": [59716.0, 60537.0],
-            "High":  [59800.0, 60600.0],
-        }, index=pd.date_range("2026-04-25", periods=2, freq="B"))
+        # history: 4/27=60537, 4/28=59917 が末尾
+        hist_main = pd.DataFrame({
+            "Close": [59716.0, 60537.0, 59917.0],
+            "High":  [59800.0, 60600.0, 60000.0],
+        }, index=pd.date_range("2026-04-24", periods=3, freq="B"))
 
         dates_1y = pd.date_range("2025-04-01", periods=250, freq="B")
         hist_1y = pd.DataFrame({
@@ -99,15 +92,16 @@ class TestFetchNikkei225:
                 return hist_1y
             if start.endswith("-01-01") or "-01-" in start[:8]:
                 return hist_ytd
-            return hist_stale
+            return hist_main
 
         mock_ticker.history.side_effect = history_side_effect
-        # fast_info は4/28の正しい終値（59917）を返す
-        mock_ticker.fast_info = {"previousClose": 59917.0}
+        # Yahoo の fast_info はしばしば "1日前" の値を previousClose として返すが
+        # 我々のロジックではこれを無視し、history を信頼する
+        mock_ticker.fast_info = {"previousClose": 60537.0}  # 1日前の値（罠）
 
         result = fetch_nikkei225()
 
-        # close は fast_info の値、prev_close は history 末尾（4/27）
+        # close は history[-1] = 4/28終値、prev_close は history[-2] = 4/27終値
         assert result["nikkei_close"] == 59917.0
         assert result["nikkei_prev_close"] == 60537.0
         assert result["nikkei_diff"] == round(59917.0 - 60537.0, 2)

@@ -69,27 +69,28 @@ def fetch_nikkei225() -> dict:
             raise ValueError("日経平均の直近データが不足しています")
 
         # --- 前日終値の取得 ---
-        # yfinance history は UTC/JST 境界の都合で最新バーが欠落する場合がある。
-        # fast_info['previousClose'] は Yahoo が管理する "直近完了済みセッション終値" を返すため
-        # より信頼性が高い。一方 history の末尾が fast_info と一致しない場合、
-        # history の末尾はその1つ前の営業日として前日比計算に使う。
-        hist_last  = round(float(hist["Close"].iloc[-1]), 2)
-        hist_prev  = round(float(hist["Close"].iloc[-2]), 2)
-        try:
-            fi_close = round(float(ticker.fast_info["previousClose"]), 2)
-        except Exception:
-            fi_close = hist_last
+        # history.iloc[-1] = 直近完了済みセッションの終値、iloc[-2] = その1つ前の営業日。
+        # 過去に PR #13 で fast_info['previousClose'] を併用したが、Yahoo の "previousClose"
+        # は最新セッション(=現在進行中)の "前日"=昨日終値を意味し、JST 朝の文脈では
+        # history.iloc[-1] と同じ営業日ではなく "iloc[-2] 相当" を返してしまう。
+        # その結果、close と prev_close を逆向きに入れ替える不具合が発生したため
+        # シンプルに history のみを信頼する方式に戻す（PR #14）。
+        close      = round(float(hist["Close"].iloc[-1]), 2)
+        prev_close = round(float(hist["Close"].iloc[-2]), 2)
 
-        if fi_close != hist_last:
-            # fast_info が history より新しい（history が1日遅れている）場合
-            # close = fast_info の値、prev_close = history の末尾（=1つ前の営業日）
-            print(f"[INFO] fast_info close={fi_close} / hist[-1]={hist_last} → fast_info を採用")
-            close      = fi_close
-            prev_close = hist_last
-        else:
-            # history が最新まで揃っている通常ケース
-            close      = hist_last
-            prev_close = hist_prev
+        # サニティチェック: history 末尾の日付が古すぎる場合は警告ログを出す
+        # （Yahoo Finance のバックエンド遅延で最新営業日が欠落している可能性）
+        try:
+            last_bar_date = hist.index[-1].date()
+            jst_today     = now.date()
+            gap_days      = (jst_today - last_bar_date).days
+            if gap_days >= 4:
+                print(
+                    f"[WARN] history 末尾の日付 {last_bar_date} が今日({jst_today})から"
+                    f"{gap_days}日前です。最新営業日のデータが欠落している可能性があります。"
+                )
+        except Exception:
+            pass
 
         diff = round(close - prev_close, 2)
         diff_pct = round((diff / prev_close) * 100, 2) if prev_close else 0.0
