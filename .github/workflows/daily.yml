@@ -1,9 +1,11 @@
-name: 日本株Bot - 定時配信（平日 8:30 JST）
+name: 日本株Bot - 定時配信（平日 9:10 JST）
 
 on:
-  # 平日 08:00 JST (= UTC 23:00 前日) に起動し、スクリプト内で08:30まで待機
+  # 平日 09:10 JST (= UTC 00:10) に起動。
+  # 8:30 JST だと yfinance の ^N225 履歴データが Tokyo市場開場(9:00)前で
+  # 前日バーが反映されない構造的問題があるため、9:10 まで遅らせている。
   schedule:
-    - cron: "0 23 * * 0-4"
+    - cron: "10 0 * * 1-5"
   workflow_dispatch:
 
 permissions:

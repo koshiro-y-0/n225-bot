@@ -25,7 +25,7 @@
 ```
 n225-bot/
 ├── .github/workflows/
-│   ├── daily.yml          # 平日 8:30 JST 定時配信
+│   ├── daily.yml          # 平日 9:10 JST 定時配信
 │   ├── weekly.yml         # 金曜 15:30 JST 週次レポート
 │   ├── alert.yml          # 平日 30分毎 節目アラート
 │   └── test.yml           # feature/* push / PR で自動テスト
@@ -126,7 +126,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 
 | Workflow | cron (UTC) | JST | 内容 |
 |---|---|---|---|
-| daily.yml | `0 23 * * 0-4` | 平日 8:30 | 定時レポート |
+| daily.yml | `10 0 * * 1-5` | 平日 9:10 | 定時レポート（市場開場後に取得） |
 | weekly.yml | `30 6 * * 5` | 金曜 15:30 | ウィークリー + 画像 |
 | alert.yml | `*/30 0-7 * * 1-5` | 平日 9-16時 30分毎 | 節目アラート |
 | test.yml | push/PR | - | pytest 自動実行 |
