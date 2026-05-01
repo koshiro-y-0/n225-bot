@@ -19,19 +19,23 @@ from src.ueda.main import build_ueda_report
 from src.nikkei.nikkei_module import fetch_nikkei_data
 
 TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
-TARGET_HOUR = 8
-TARGET_MINUTE = 30
+TARGET_HOUR = 9
+TARGET_MINUTE = 10
 
 
 def _wait_until_target_time():
-    """08:30 JST まで待機する（最大35分）"""
+    """09:10 JST まで待機する（最大35分）
+
+    Tokyo市場が9:00 JSTに開場すると yfinance の ^N225 履歴データが
+    前日バーを反映する。9:10 まで待つことで stale なデータを掴むリスクを排除。
+    """
     now = now_jst()
     if now.hour > TARGET_HOUR or (now.hour == TARGET_HOUR and now.minute >= TARGET_MINUTE):
         return
     target = now.replace(hour=TARGET_HOUR, minute=TARGET_MINUTE, second=0, microsecond=0)
     wait_seconds = (target - now).total_seconds()
     if 0 < wait_seconds <= 2100:
-        print(f"[INFO] 08:30 JST まで {int(wait_seconds)} 秒待機します...")
+        print(f"[INFO] 09:10 JST まで {int(wait_seconds)} 秒待機します...")
         time.sleep(wait_seconds)
 
 
